@@ -10,7 +10,7 @@ import { Auth, AuthState } from '@/hooks/models/authState';
 import { useAppDispatch,useAppSelector } from '@/hooks/redux-hook';
 
 export default function LoginScreen() {
-  const [text, onChangeText] = React.useState('Email');
+  const [email, onChangeEmail] = React.useState('Email');
   const [password, onChangePassword] = React.useState('Password');
   const router = useRouter();
 
@@ -24,6 +24,24 @@ export default function LoginScreen() {
 
   const handleSignUp = (auth:Auth) => {
     dispatch(signIn(auth))
+  };
+
+  const handleLogin = async () => {
+    // This is only a basic validation of inputs. Improve this as needed.
+    if (email && password) {
+      try {
+        await dispatch(
+          login({
+            email,
+            password,
+          })
+        ).unwrap();
+      } catch (e) {
+        console.error(e);
+      }
+    } else {
+      // Show an error message.
+    }
   };
 
   
@@ -58,8 +76,8 @@ export default function LoginScreen() {
         <TextInput
           mode = {'outlined'}
           style={styles.input}
-          onChangeText={onChangeText}
-          value={text}
+          onChangeText={onChangeEmail}
+          value={email}
         />
       </ThemedView>
       <ThemedView style={styles.stepContainer}>

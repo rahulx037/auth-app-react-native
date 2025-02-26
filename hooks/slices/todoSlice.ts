@@ -1,34 +1,49 @@
 import { createSlice,createAsyncThunk } from '@reduxjs/toolkit';
 import { Todo,TodoState } from '../models/todoState';
+import axiosInstance from '@/app/services/api/repository';
 
 
 const todosSlice = createSlice({
   name: 'todos',
   initialState: {
     loading: false,
-    todos: [],
+    todos: [] as Todo[],
   } satisfies TodoState as TodoState,
 
   reducers: (create) => ({
-
-    deleteTodo: create.reducer<number>((state, action) => {
-      state.todos.splice(action.payload, 1)
-    }),
-
-    addTodo: create.preparedReducer(
-      (todo:Todo) => {
-        return { payload: todo }
+    createTask: create.asyncThunk(async (data:Todo) => {
+      const header = {
+        'Content-Type': 'application/json',
+        'Authorization': 'JWT fefege...'
+      }
+      const response = await axiosInstance.post("tasks/create-task", data,{headers:header});
+      const resData = response.data;
+      localStorage.setItem("userInfo", JSON.stringify(resData));
+      return (await resData.json()) as Todo
       },
-      // action type is inferred from prepare callback
-      (state, action) => {
-        state.todos.push(action.payload)
+      {
+        pending: (state) => {
+          state.loading = true
+        },
+        rejected: (state, action) => {
+          state.loading = false
+        },
+        fulfilled: (state, action) => {
+          state.loading = false
+          state.todos.push(action.payload)
+        },
       }
     ),
 
-    fetchAllTodo: create.asyncThunk(
-      async (page:number,thunkApi) => {
-        const res = await fetch(`myApi/todos?id=${page}`)
-        return (await res.json()) as Array<Todo>
+    getAllTask: create.asyncThunk(async (pageNumber:number) => {
+      const header = {
+        'Content-Type': 'application/json',
+        'Authorization': 'JWT fefege...'
+      }
+      const response = await axiosInstance.get("tasks/all-tasks",{params:{page:pageNumber},headers:header});
+      const resData = response.data;
+      localStorage.setItem("userInfo", JSON.stringify(resData));
+      return (await resData.json()) as Array<Todo>
       },
       {
         pending: (state) => {
@@ -43,6 +58,54 @@ const todosSlice = createSlice({
         },
       }
     ),
+
+    getTaskById: create.asyncThunk(async (taskId:string) => {
+      const header = {
+        'Content-Type': 'application/json',
+        'Authorization': 'JWT fefege...'
+      }
+      const response = await axiosInstance.get("tasks/single-task",{params:{_id:taskId},headers:header});
+      const resData = response.data;
+      localStorage.setItem("userInfo", JSON.stringify(resData));
+      return (await resData.json()) as Todo
+      },
+      {
+        pending: (state) => {
+          state.loading = true
+        },
+        rejected: (state, action) => {
+          state.loading = false
+        },
+        fulfilled: (state, action) => {
+          state.loading = false
+        },
+      }
+    ),
+
+    deleteTask: create.asyncThunk(async (taskId:Todo) => {
+      const header = {
+        'Content-Type': 'application/json',
+        'Authorization': 'JWT fefege...'
+      }
+      const response = await axiosInstance.delete("tasks/delete-task",{params:{_id:taskId._id},headers:header});
+      const resData = response.data;
+      localStorage.setItem("userInfo", JSON.stringify(resData));
+      return (await resData.json()) as Todo
+      },
+      {
+        pending: (state) => {
+          state.loading = true
+        },
+        rejected: (state) => {
+          state.loading = false
+        },
+        fulfilled: (state, action) => {
+          state.loading = false
+          state.todos.splice(state.todos.indexOf(action.payload),1)
+        },
+      }
+    ),
+
   }),
 })
 
