@@ -3,6 +3,8 @@ import React from "react";
 import { SafeAreaView, FlatList, StyleSheet, Text, View ,TouchableOpacity,RefreshControl,Platform,I18nManager} from "react-native";
 import { Searchbar,FAB,Portal,Avatar } from 'react-native-paper';
 import {useRouter } from 'expo-router';
+import { useSelector, useDispatch } from "react-redux";
+import { addTodo, deleteTodo, fetchAllTodo  } from '@/hooks/slices/todoSlice';
 
 const persons = [
   { id: 1, name: 'John Brahm', designation: 'Project Manager' },
