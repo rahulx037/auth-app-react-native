@@ -5,7 +5,7 @@ import { ThemedView } from '@/components/ThemedView';
 import React from 'react';
 import { Button,Text,TextInput } from 'react-native-paper';
 import {useRouter } from 'expo-router';
-import { signUp, signIn  } from '@/hooks/slices/loginSlice';
+import { signUp, signIn, login  } from '@/hooks/slices/loginSlice';
 import { Auth, AuthState } from '@/hooks/models/authState';
 import { useAppDispatch,useAppSelector } from '@/hooks/redux-hook';
 
@@ -14,7 +14,7 @@ export default function LoginScreen() {
   const [password, onChangePassword] = React.useState('Password');
   const router = useRouter();
 
-  const auth = useAppSelector((state) => state.auth);
+  const auth = useAppSelector((state) => state.auth.auth.success);
   const dispatch = useAppDispatch();
   
 
