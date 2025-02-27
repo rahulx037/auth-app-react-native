@@ -10,7 +10,9 @@
     },
     "preview": {
       "android": {
-        "buildType": "apk"
+        "buildType": "apk",
+        "channel": "preview",
+        "distribution": "internal"
       }
     },
     "preview2": {
@@ -19,13 +21,16 @@
       }
     },
     "preview3": {
-      "developmentClient": true
+      "developmentClient": true,
+      "channel": "preview"
     },
     "preview4": {
-      "distribution": "internal"
+      "distribution": "internal",
+      "channel": "preview"
     },
     "production": {
-      "autoIncrement": true
+      "autoIncrement": true,
+      "channel": "production"
     }
   },
   "submit": {

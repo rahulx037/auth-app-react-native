@@ -6,13 +6,47 @@ import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { Button,Text,TextInput } from 'react-native-paper';
 import React from 'react';
+import {register  } from '@/hooks/slices/loginSlice';
+import { NewUser } from '@/hooks/models/authState';
+import { useAppDispatch,useAppSelector } from '@/hooks/redux-hook';
+import { notifyMessage } from '../utils/constants';
+import {useRouter } from 'expo-router';
 
 export default function SignupScreen() {
-  const [text, onChangeText] = React.useState('Email');
-  const [password, onChangePassword] = React.useState('Password');
-  const [cfpassword, cfonChangePassword] = React.useState('Confirm Password');
+ 
+  const [email, onChangeEmail] = React.useState('');
+  const [password, onChangePassword] = React.useState('');
+  const [username, onUserName] = React.useState('');
+  const router = useRouter();
+  const dispatch = useAppDispatch();
+
+  const navigateHome = () => {
+      router.push('/(home)');
+    };
+  
+  const handleSignUp = async () => {
+      // This is only a basic validation of inputs. Improve this as needed.
+      if (email && password && username) {
+        try {
+          await dispatch(
+            register({name:username,email:email,password:password} as NewUser)
+          ).unwrap().then((response)=>{
+            if(response.success===true){
+              notifyMessage('Registeration successful..')
+              navigateHome()
+            }else{
+              notifyMessage('Registeration failed!..')
+            }
+          });
+        } catch (e) {
+          console.error(e);
+        }
+      } else {
+        // Show an error message.
+      }
+    };
+
   return (
-    
     <ParallaxScrollView
       headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
       headerImage={
@@ -25,12 +59,22 @@ export default function SignupScreen() {
         <ThemedText type="title">Register!</ThemedText>
       </ThemedView>
       <ThemedView style={styles.stepContainer}>
+        <ThemedText type="subtitle">User Name:</ThemedText>
+        <TextInput
+          mode = {'outlined'}
+          style={styles.input}
+          onChangeText={onUserName}
+          value={username}
+        />
+      </ThemedView>
+      <ThemedView style={styles.stepContainer}>
         <ThemedText type="subtitle">Email:</ThemedText>
         <TextInput
           mode = {'outlined'}
           style={styles.input}
-          onChangeText={onChangeText}
-          value={text}
+          onChangeText={onChangeEmail}
+          value={email}
+          keyboardType="visible-password"
         />
       </ThemedView>
       <ThemedView style={styles.stepContainer}>
@@ -43,18 +87,8 @@ export default function SignupScreen() {
           keyboardType="visible-password"
         />
       </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Confirm Password:</ThemedText>
-        <TextInput
-          mode = {'outlined'}
-          style={styles.input}
-          onChangeText={cfonChangePassword}
-          value={cfpassword}
-          keyboardType="visible-password"
-        />
-      </ThemedView>
 
-      <Button mode="contained" onPress={() => Alert.alert('Simple Button pressed')}>
+      <Button mode="contained" onPress={handleSignUp}>
       Register
       </Button>
       

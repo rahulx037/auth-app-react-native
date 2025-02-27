@@ -6,9 +6,9 @@ export const login = createAsyncThunk("login", async (data: User) => {
   const response = await axiosInstance.post("auth/signin", data);
   const resData = response.data;
 
-  localStorage.setItem("userInfo", JSON.stringify(resData));
+  //localStorage.setItem("userInfo", JSON.stringify(resData));
 
-  return (await resData.json()) as Auth;
+  return (resData) as Auth;
 });
 
 export const register = createAsyncThunk("signup", async (data: NewUser) => {
@@ -18,18 +18,18 @@ export const register = createAsyncThunk("signup", async (data: NewUser) => {
   );
   const resData = response.data;
 
-  localStorage.setItem("userInfo", JSON.stringify(resData));
+  //localStorage.setItem("userInfo", JSON.stringify(resData));
 
-  return (await resData.json()) as Auth
+  return (resData) as Auth
 });
 
 export const logout = createAsyncThunk("logout", async () => {
   const response = await axiosInstance.post("auth/logout", {});
   const resData = response.data;
 
-  localStorage.removeItem("userInfo");
+  //localStorage.removeItem("userInfo");
 
-  return (await resData.json()) as Auth
+  return (resData) as Auth
 });
 
 export const getUser = createAsyncThunk(

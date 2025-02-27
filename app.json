@@ -9,14 +9,18 @@
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "runtimeVersion": {
+        "policy": "appVersion"
+      }
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.rahul037.authapp"
+      "package": "com.rahul037.authapp",
+      "runtimeVersion": "1.0.0"
     },
     "web": {
       "bundler": "metro",
@@ -46,6 +50,9 @@
         "projectId": "3c80878a-1c07-4d15-9587-e5d23fab4de5"
       }
     },
-    "owner": "rahul037"
+    "owner": "rahul037",
+    "updates": {
+      "url": "https://u.expo.dev/3c80878a-1c07-4d15-9587-e5d23fab4de5"
+    }
   }
 }
