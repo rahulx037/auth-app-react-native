@@ -1,56 +1,57 @@
 import { createSlice,createAsyncThunk } from '@reduxjs/toolkit';
-import { Todo,TodoState } from '../models/todoState';
+import { Data, Todo,TodoState } from '../models/todoState';
 import axiosInstance from '@/app/services/api/repository';
+import { TOKEN } from '@/app/utils/constants';
 
 export const createTask = createAsyncThunk("create", async (data: Todo) => {
   const header = {
     'Content-Type': 'application/json',
-    'Authorization': 'JWT fefege...'
+    'Authorization': TOKEN
   };
   const response = await axiosInstance.post("tasks/create-task", data,{headers:header});
   const resData = response.data;
-  localStorage.setItem("userInfo", JSON.stringify(resData));
-  return (await resData.json()) as Todo;
+  //localStorage.setItem("userInfo", JSON.stringify(resData));
+  return (resData) as Todo;
 });
 
 export const getallTask = createAsyncThunk("alltask", async (pageNumber:number) => {
   const header = {
     'Content-Type': 'application/json',
-    'Authorization': 'JWT fefege...'
+    'Authorization': TOKEN
   };
   const response = await axiosInstance.get("tasks/all-tasks",{params:{page:pageNumber},headers:header});
   const resData = response.data;
-  localStorage.setItem("userInfo", JSON.stringify(resData));
-  return (await resData.json()) as Array<Todo>;
+  //localStorage.setItem("userInfo", JSON.stringify(resData));
+  return (resData) as Todo
 });
 
 export const gettaskById = createAsyncThunk("singletask", async (taskId:string) => {
   const header = {
     'Content-Type': 'application/json',
-    'Authorization': 'JWT fefege...'
+    'Authorization': TOKEN
   };
   const response = await axiosInstance.get("tasks/single-task",{params:{_id:taskId},headers:header});
   const resData = response.data;
   localStorage.setItem("userInfo", JSON.stringify(resData));
-  return (await resData.json()) as Todo;
+  return (resData) as Todo
 });
 
 export const deleteSingleTask = createAsyncThunk("deletetask", async (taskId:Todo) => {
   const header = {
     'Content-Type': 'application/json',
-    'Authorization': 'JWT fefege...'
+    'Authorization': TOKEN
   };
   const response = await axiosInstance.delete("tasks/delete-task",{params:{_id:taskId._id},headers:header});
   const resData = response.data;
   localStorage.setItem("userInfo", JSON.stringify(resData));
-  return (await resData.json()) as Todo;
+  return (resData) as Todo
 });
 
 const todosSlice = createSlice({
   name: 'todos',
   initialState: {
     loading: false,
-    todos: [] as Todo[],
+    todos: [] as Data[],
   } satisfies TodoState as TodoState,
 
   reducers: () => ({
@@ -68,16 +69,16 @@ const todosSlice = createSlice({
           state.loading =false;
         }).addCase(createTask.fulfilled , (state, action) => {
           state.loading =false;
-          state.todos.push(action.payload);
+          state.todos.push(action.payload.data as Data);
         }).addCase(getallTask.fulfilled , (state, action) => {
           state.loading =false;
-          state.todos.concat(action.payload);
+          state.todos.concat(action.payload.data as Data[]);
         }).addCase(gettaskById.fulfilled , (state, action) => {
           state.loading =false;
           //state.todos.concat(action.payload);
         }).addCase(deleteSingleTask.fulfilled , (state, action) => {
           state.loading =false;
-          state.todos.splice(state.todos.indexOf(action.payload),1)
+          state.todos.splice(state.todos.indexOf(action.payload.data as Data),1)
         })
         ;
     },

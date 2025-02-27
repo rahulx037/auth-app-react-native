@@ -1,31 +1,44 @@
 
-import React from "react";
+import React, { useEffect } from "react";
 import { SafeAreaView, FlatList, StyleSheet, Text, View ,TouchableOpacity,RefreshControl,Platform,I18nManager} from "react-native";
 import { Searchbar,FAB,Portal,Avatar } from 'react-native-paper';
 import {useRouter } from 'expo-router';
-import { useSelector, useDispatch } from "react-redux";
-import { addTodo, deleteTodo, fetchAllTodo  } from '@/hooks/slices/todoSlice';
+import { clearTask, getallTask  } from '@/hooks/slices/todoSlice';
+import { useAppDispatch,useAppSelector } from '@/hooks/redux-hook';
+import { notifyMessage } from '../utils/constants';
 
-const persons = [
-  { id: 1, name: 'John Brahm', designation: 'Project Manager' },
-  { id: 2, name: 'Tom Jack', designation: 'Software Engineer' },
-  { id: 3, name: 'Mark Bell', designation: 'QA Engineer' },
-  { id: 4, name: 'Marshall Doe', designation: 'Software Engineer' },
-  { id: 5, name: 'John Dow', designation: 'Product Manager' },
-  { id: 6, name: 'Harry Jam', designation: 'Team Lead' },
-  { id: 7, name: 'Oliver James', designation: 'Graphic Designer' },
-  { id: 8, name: 'Ella Avery', designation: 'QA Engineer' },
-  { id: 9, name: 'William Thomas', designation: 'Graphic Designer' },
-  { id: 10, name: 'Edward Brian', designation: 'Team Lead' },
-];
-
-
-  export default function TodoHome() {
+export default function TodoHome() {
 
     const [searchQuery, setSearchQuery] = React.useState('');
     const [showButton, setShowButton] = React.useState(true)
-
     const router = useRouter();
+
+     const tasks = useAppSelector((state) => state.todos.todos);
+      const dispatch = useAppDispatch();
+
+    const fetchTask = async () => {
+        // This is only a basic validation of inputs. Improve this as needed.
+        try {
+          await dispatch(
+            getallTask(0)
+          ).unwrap().then((response)=>{
+            if(response.success===true){
+              notifyMessage('Task Fetch successful..')
+            }else{
+              notifyMessage('Login failed!..')
+            }
+          });
+        } catch (e) {
+          console.error(e);
+        }
+      };
+    
+    useEffect(()=>{
+      fetchTask()
+      return () => {
+        dispatch(clearTask()); // Clear user data when the component is unmounted
+      };
+    },[tasks]);
     
       const navigateToAdd = () => {
         router.push('/(home)/addTodo');
@@ -46,7 +59,7 @@ const persons = [
   return (
     <SafeAreaView style={styles.container}>
       <FlatList
-        data={persons}
+        data={tasks}
         onMomentumScrollBegin={()=>setShowButton(false)}
         onMomentumScrollEnd={()=>setShowButton(true)}
         showsHorizontalScrollIndicator={false}
@@ -56,7 +69,7 @@ const persons = [
             title={'Fetching data...'}
           />
         }
-        keyExtractor={(item) => item.id.toString()}
+        keyExtractor={(item) => (item._id) as string}
         ItemSeparatorComponent={myItemSeparator}
         ListEmptyComponent={myListEmpty}
         ListHeaderComponent={() => (
@@ -80,8 +93,8 @@ const persons = [
                 <View style={styles.listTile}>
                   <Avatar.Icon size={35} icon="note" />
                   <View style={styles.flatlist}>
-                  <Text style={styles.heading2}>{item.name}</Text>
-                  <Text style={styles.subheading}>{item.designation}</Text>
+                  <Text style={styles.heading2}>{item.title}</Text>
+                  <Text style={styles.subheading}>{item.description}</Text>
                  </View>
                 </View>
              

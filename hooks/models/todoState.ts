@@ -1,22 +1,23 @@
-export interface Todo {
+
+export interface Data{
     _id?: string
     title: string,
     description:string,
-    userId:string,
+}
+
+export interface Todo {
+    data: Data [] | Data
     success:boolean,
     message:string,
   }
   
 export interface TodoState {
     loading: boolean
-    todos: Todo []
+    todos: Data []
   }
 
 export class initialTodoData implements Todo {
-    _id?: string | undefined;
-     title: string = "";
-     description:string ="";
-     userId:string="";
+     data= [];
      success=false;
      message="";
   }
