@@ -1,6 +1,7 @@
 import {  createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { Auth,AuthState,initialAuthData,User,NewUser } from '../models/authState';
 import axiosInstance from '@/app/services/api/repository';
+import { setToken } from '@/app/services/storage/localStore';
 
 export const login = createAsyncThunk("login", async (data: User) => {
   const response = await axiosInstance.post("auth/signin", data);
@@ -16,19 +17,16 @@ export const register = createAsyncThunk("signup", async (data: NewUser) => {
     "auth/signup",
     data
   );
-  const resData = response.data;
+  const resData = response.data as Auth;
+  setToken(resData.token as string)
 
-  //localStorage.setItem("userInfo", JSON.stringify(resData));
 
-  return (resData) as Auth
+  return resData
 });
 
 export const logout = createAsyncThunk("logout", async () => {
   const response = await axiosInstance.post("auth/logout", {});
   const resData = response.data;
-
-  //localStorage.removeItem("userInfo");
-
   return (resData) as Auth
 });
 

@@ -33,16 +33,16 @@ export default function RootLayout() {
 
   return (
     <PaperProvider>
-    <Provider store={store}>
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+      <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+      <Provider store={store}>
       <Stack>
         <Stack.Screen name= "(auths)" options={{headerShown: false}}/>
         <Stack.Screen name= "(home)" options={{headerShown: false}}/>
         <Stack.Screen name="+not-found" />
       </Stack>
       <StatusBar style="auto" />
-    </ThemeProvider>
     </Provider>
+    </ThemeProvider>
     </PaperProvider>
   );
 }

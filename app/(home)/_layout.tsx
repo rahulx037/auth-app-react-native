@@ -12,8 +12,8 @@ export default function TabLayout() {
           headerShown: false
         }}>
         <Stack.Screen name="index" options={{headerShown: true,title:"Home"}}/>
-        <Stack.Screen name="detail" />
-        <Stack.Screen name="addTodo" />
+        <Stack.Screen name="detail" options={{headerShown: true,title:"Task Detail"}} />
+        <Stack.Screen name="addTodo"options={{headerShown: true,title:"Add Task"}} />
       </Stack>
       </ThemeProvider>
     );

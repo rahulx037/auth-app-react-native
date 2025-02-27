@@ -2,33 +2,32 @@ import { createSlice,createAsyncThunk } from '@reduxjs/toolkit';
 import { Data, Todo,TodoState } from '../models/todoState';
 import axiosInstance from '@/app/services/api/repository';
 import { TOKEN } from '@/app/utils/constants';
+import { getToken } from '@/app/services/storage/localStore';
 
-export const createTask = createAsyncThunk("create", async (data: Todo) => {
+export const createTask = createAsyncThunk("create", async (data: Data) => {
   const header = {
     'Content-Type': 'application/json',
-    'Authorization': TOKEN
+    'authorization': await getToken() ?? TOKEN
   };
   const response = await axiosInstance.post("tasks/create-task", data,{headers:header});
   const resData = response.data;
-  //localStorage.setItem("userInfo", JSON.stringify(resData));
   return (resData) as Todo;
 });
 
 export const getallTask = createAsyncThunk("alltask", async (pageNumber:number) => {
   const header = {
     'Content-Type': 'application/json',
-    'Authorization': TOKEN
+    'authorization': await getToken() ?? TOKEN
   };
   const response = await axiosInstance.get("tasks/all-tasks",{params:{page:pageNumber},headers:header});
   const resData = response.data;
-  //localStorage.setItem("userInfo", JSON.stringify(resData));
-  return (resData) as Todo
+  return resData as Todo
 });
 
 export const gettaskById = createAsyncThunk("singletask", async (taskId:string) => {
   const header = {
     'Content-Type': 'application/json',
-    'Authorization': TOKEN
+    'Authorization': await getToken() ?? TOKEN
   };
   const response = await axiosInstance.get("tasks/single-task",{params:{_id:taskId},headers:header});
   const resData = response.data;
@@ -39,7 +38,7 @@ export const gettaskById = createAsyncThunk("singletask", async (taskId:string) 
 export const deleteSingleTask = createAsyncThunk("deletetask", async (taskId:Todo) => {
   const header = {
     'Content-Type': 'application/json',
-    'Authorization': TOKEN
+    'Authorization': await getToken() ?? TOKEN
   };
   const response = await axiosInstance.delete("tasks/delete-task",{params:{_id:taskId._id},headers:header});
   const resData = response.data;
@@ -72,7 +71,7 @@ const todosSlice = createSlice({
           state.todos.push(action.payload.data as Data);
         }).addCase(getallTask.fulfilled , (state, action) => {
           state.loading =false;
-          state.todos.concat(action.payload.data as Data[]);
+          state.todos = [...(action.payload.data) as Data[]]
         }).addCase(gettaskById.fulfilled , (state, action) => {
           state.loading =false;
           //state.todos.concat(action.payload);

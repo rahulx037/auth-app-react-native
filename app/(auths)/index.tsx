@@ -3,11 +3,12 @@ import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import React, { useEffect } from 'react';
-import { Button,Text,TextInput } from 'react-native-paper';
+import { Button,Text,TextInput,Snackbar } from 'react-native-paper';
 import {useRouter } from 'expo-router';
 import { login  } from '@/hooks/slices/loginSlice';
 import { useAppDispatch,useAppSelector } from '@/hooks/redux-hook';
 import { notifyMessage } from '../utils/constants';
+import { getToken } from '../services/storage/localStore';
 
 export default function LoginScreen() {
   const [email, onChangeEmail] = React.useState('');
@@ -21,8 +22,9 @@ export default function LoginScreen() {
     // This is only a basic validation of inputs. Improve this as needed.
     if (email && password) {
       try {
+        notifyMessage('Loading...')
         await dispatch(
-          login({
+          login({  
             email,
             password,
           })
@@ -36,15 +38,16 @@ export default function LoginScreen() {
         });
       } catch (e) {
         console.error(e);
+        notifyMessage('Login failed!..')
       }
     } else {
-      // Show an error message.
+      notifyMessage('Check email or password incorrect.')
     }
   };
 
 
   const navigateHome = () => {
-		router.push('/(home)');
+		router.replace('/(home)');
 	};
 
   const navigateSignup = () => {
@@ -54,6 +57,16 @@ export default function LoginScreen() {
   const navigateReset = () => {
 		router.push('/forgot');
 	};
+
+  useEffect(()=>  {
+    getToken().then(session=>{
+     if(!!session){
+
+     }else{
+       navigateHome()
+     }
+    })
+},[]);
 
 
 

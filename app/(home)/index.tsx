@@ -6,23 +6,30 @@ import {useRouter } from 'expo-router';
 import { clearTask, getallTask  } from '@/hooks/slices/todoSlice';
 import { useAppDispatch,useAppSelector } from '@/hooks/redux-hook';
 import { notifyMessage } from '../utils/constants';
+import { List } from 'react-native-paper';
+import { useRef } from "react";
+import { State } from "react-native-gesture-handler";
+
 
 export default function TodoHome() {
 
     const [searchQuery, setSearchQuery] = React.useState('');
     const [showButton, setShowButton] = React.useState(true)
     const router = useRouter();
+    const hasRun = useRef(false)
 
-     const tasks = useAppSelector((state) => state.todos.todos);
-      const dispatch = useAppDispatch();
+    const tasks = useAppSelector((state) => state.todos.todos);
+    const dispatch = useAppDispatch();
 
-    const fetchTask = async () => {
-        // This is only a basic validation of inputs. Improve this as needed.
+    
+    useEffect(()=>{
+      const fetchTask = async () => {
         try {
           await dispatch(
             getallTask(0)
           ).unwrap().then((response)=>{
             if(response.success===true){
+              console.log(response.data)
               notifyMessage('Task Fetch successful..')
             }else{
               notifyMessage('Login failed!..')
@@ -32,16 +39,15 @@ export default function TodoHome() {
           console.error(e);
         }
       };
-    
-    useEffect(()=>{
+
       fetchTask()
       return () => {
         dispatch(clearTask()); // Clear user data when the component is unmounted
       };
-    },[tasks]);
+    },[]);
     
       const navigateToAdd = () => {
-        router.push('/(home)/addTodo');
+        router.push('../addTodo');
       };
 
     const myItemSeparator = () => {
@@ -49,6 +55,7 @@ export default function TodoHome() {
       };
     
     const myListEmpty = () => {
+      
       return (
         <View style={{ alignItems: "center" }}>
         <Text style={styles.item}>No data found</Text>
@@ -58,6 +65,7 @@ export default function TodoHome() {
       
   return (
     <SafeAreaView style={styles.container}>
+      <View style={{flex:1}}>
       <FlatList
         data={tasks}
         onMomentumScrollBegin={()=>setShowButton(false)}
@@ -74,44 +82,36 @@ export default function TodoHome() {
         ListEmptyComponent={myListEmpty}
         ListHeaderComponent={() => (
           <Searchbar
-             elevation={0}
+             elevation={1}
              placeholder="Search"
              onChangeText={setSearchQuery}
              value={searchQuery}
           />
         )}
         ListFooterComponent={() => (
-          <Text style={{ fontSize: 30, textAlign: "center",marginBottom:65,fontWeight:'bold' ,color:'grey' }}>Thank You</Text>
+          <Text style={{ fontSize: 30, textAlign: "center",marginBottom:50,marginTop:50,fontWeight:'bold' ,color:'grey' }}>Your Task</Text>
         )}
 
         renderItem={({item}) => {
           return (
-            <TouchableOpacity
-              onPress={() => {
-                
-              }}>
-                <View style={styles.listTile}>
-                  <Avatar.Icon size={35} icon="note" />
-                  <View style={styles.flatlist}>
-                  <Text style={styles.heading2}>{item.title}</Text>
-                  <Text style={styles.subheading}>{item.description}</Text>
-                 </View>
-                </View>
-             
-            </TouchableOpacity>
+            <List.Item
+                title={item.title}
+                description={item.description}
+                left={props => <List.Icon {...props} icon="folder" />}
+            />
           );
         }}
       />
-     <Portal>
      <FAB
         size="medium"
-        color="blue"
+        color="white"
         icon="plus"
         label="Add Note"
         style={styles.fab}
         onPress={navigateToAdd}
      />
-    </Portal>
+     
+    </View>
     </SafeAreaView>
     );
    }
@@ -149,5 +149,6 @@ export default function TodoHome() {
       position: 'absolute',
       right: 16,
       bottom:16,
+      zIndex:1
     },
   });

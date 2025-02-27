@@ -19,12 +19,13 @@ export default function SignupScreen() {
   const dispatch = useAppDispatch();
 
   const navigateHome = () => {
-      router.push('/(home)');
+      router.replace('/(home)');
     };
   
   const handleSignUp = async () => {
       // This is only a basic validation of inputs. Improve this as needed.
       if (email && password && username) {
+        notifyMessage('Loading...')
         try {
           await dispatch(
             register({name:username,email:email,password:password} as NewUser)
@@ -40,7 +41,7 @@ export default function SignupScreen() {
           console.error(e);
         }
       } else {
-        // Show an error message.
+       notifyMessage('Please fill mendatory fields..')
       }
     };
 
